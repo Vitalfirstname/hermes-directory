@@ -28,3 +28,8 @@ build/
 
 # Misc
 *.tmp
+# personal backend notes
+hermes_directory_backend/DjangoRF info.txt
+hermes_directory_backend/Jango info.txt
+hermes_directory_backend/in.txt
+

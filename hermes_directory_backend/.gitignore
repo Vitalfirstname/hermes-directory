@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.pyc
+
+# Virtual env
+env/
+venv/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Django stuff
+db.sqlite3
+*.sqlite3
+*.log
+media/
+static/
+staticfiles/
+*.pot
+
+# Secrets
+*.env
+.env
+local_settings.py
+
+# VSCode & JetBrains (PyCharm/IDEA) files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Test & coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Misc
+*.bak
+*.zip
+*.rar
+*.tar
+*.tar.gz
