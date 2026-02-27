@@ -47,3 +47,20 @@ pip install -r requirements.txt
 python manage.py migrate
 python manage.py createsuperuser
 python manage.py runserver 0.0.0.0:8000
+
+
+---
+
+## Screenshots
+
+### Landing
+![Landing](screenshots/landing.png)
+
+### Residents Directory
+![Residents](screenshots/residents.png)
+
+### Admin Login
+![Admin Login](screenshots/admin-login.png)
+
+### Admin Panel
+![Admin Panel](screenshots/admin-panel.png)
