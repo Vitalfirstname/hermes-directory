@@ -1,0 +1,536 @@
+.admin-footer-wrapper {
+  all: unset;         /* снятие всех унаследованных стилей */
+  display: block;
+}
+
+.admin-footer-wrapper * {
+  all: revert;        /* вернуть стили в нормальный HTML reset */
+}
+
+
+
+
+body {
+    margin: 0;
+    font-family: "Roboto", sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #f1c17f;
+    background-color: #444444;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+}
+
+
+/* Container */
+.container {
+    width: 100%;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+
+
+/* footer */
+.footer {
+    padding-top: 35px;
+
+    /*background-color: #2D3A3B;*/
+    background-color: #1e2d31;
+}
+
+.footer__inner {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 15px;
+    margin-left: 20px;
+    margin-right: 20px;
+
+}
+
+.footer__col--first {
+    width: 40%;
+}
+
+.footer__col--second {
+    width: 30%;
+}
+
+.footer__col--third {
+    width: 21%;
+    
+}
+
+.footer__title {
+    
+    letter-spacing: 2.7px; /* подбери значение */
+    font-size: 14px;
+    text-transform: uppercase;
+    margin-top: 12px;
+    margin-bottom: 8px;
+    font-weight: 700;
+    display: block;
+    width: 100%;
+    text-align: left; /* или left/right при необходимости */
+}
+.footer__col--second .footer__title {
+    margin-bottom: 27px; /* любое нужное значение */
+}
+    
+.footer__logo {
+    width: 200px;
+    height: auto;
+    display: block;
+    margin-bottom: 20px;
+    transition: transform 0.2s linear;
+}
+
+
+.footer__logo:hover {
+    transform: scale(1.04);
+    cursor: pointer;
+}
+
+.footer__text {
+    color: #f1c17f;
+    font-size: 13px;
+    letter-spacing: .8px;
+    font-style: italic;
+    line-height: 8px;
+    font-weight: 300;
+    margin-bottom: 15px;
+}
+
+
+
+
+.footer-contacts__phone a,
+.footer-contacts__email a {
+    text-decoration: none;
+    color: #f1c17f;
+   
+}
+
+.footer-contacts__phone a:hover,
+.footer-contacts__email a:hover {
+    /*text-decoration: underline;*/
+    color: #ff790b;
+}
+
+.footer-contacts__details {
+    margin-top: 7px;
+    line-height: 20px ; 
+    color: #f1c17f; /* как твой акцент в футере */
+    font-style: italic;
+}
+
+
+
+.footer__social {
+    margin-bottom: 12px;
+    
+}
+
+.footer__social__header {
+    color: #f1c17f;
+    border-bottom: 2px solid #f1c17f;
+    
+}
+
+.footer__social__header b {
+    font-size: 1px;
+    color: #b92c09;
+    /*font-weight: 700;*/
+    font-style: normal;
+
+    
+}
+
+.footer__social__content {
+    padding-top: 10px;
+    font-size: 15px;
+    font-style: italic;
+    color: #f1c17f;
+    font-weight: 300;
+}
+
+.footer__social__content a {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 5px;
+
+
+    font-size: 20px;
+    color: #f1c17f;
+}
+
+        /* blogs */
+
+.blogs__item {
+    display: flex;
+    margin-bottom: 16px;
+    align-items: center;
+}
+
+.blogs__img {
+    width: 125px;
+    height: 85px;
+    border: 1px solid #f1c17f;
+    
+}
+.blogs__content {
+    padding-left: 18px;
+    font-size: 12px;
+    font-style: italic;
+    font-weight: 300;
+
+}
+
+.blogs__title {
+    color: #f1c17f;
+    line-height: 1.5;
+    display: block;
+}
+
+.blogs__title:hover {
+    text-decoration: underline;
+    /*color: #ff790b;*/
+}
+.blogs__content {
+    color: #f39529;
+    font-style: italic;
+    font-weight: 300;
+    
+
+
+}
+.blogs__content a {
+    color: #f1c17f;
+    text-decoration: none;
+    font-weight: 300;
+}
+
+/* instagram */
+
+.instagram {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.admin__in::after {
+    content: "";
+    display: block;
+    height: 2px;
+    width: 100%;
+    background-color: #f1c17f;
+    margin-top: 17px;
+}
+
+
+.instagram__item {
+    /*width: 33.333%;*/
+    /*flex: 1 1 0;*/
+    border: 1px solid #2c7067;
+    /*border: 1px solid rgb(47, 57, 61);*/
+    /*margin-bottom: 7px;*/
+    /*margin-left: 1px;*/
+}
+.instagram__item img {
+    display: block;
+}
+
+/*___________________________________________*/
+
+/* Карточка входа */
+.login-box {
+    background: rgba(255, 255, 255,);
+    /*border: 1px solid rgba(255, 255, 255, 0.12);*/
+    padding: 2px 0;
+    /*border-radius: 12px;*/
+    /*width: 320px;*/
+    width: 100%;
+    display: grid;
+    gap: 18px;
+
+    backdrop-filter: blur(6px);
+}
+
+/* Заголовок */
+.login-title {
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    color: #f1c17f;
+    letter-spacing: 0.5px;
+}
+
+/* Группа */
+.login-form {
+    display: grid;
+    gap: 8px;
+}
+
+/* Лейблы */
+.form-group label {
+    font-size: 10px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    
+    opacity: 0.8;
+}
+
+/* Поля ввода */
+.input {
+    width: 100%;
+    height: 42px;
+    padding: 0 8px;
+
+    background: rgba(255, 255, 255, 0.9);
+    /*border-radius: 6px;*/
+    border: 1px solid #f1c17f;
+
+    font-size: 14px;
+    color: #222;
+
+    transition: all 0.25s ease;
+}
+
+/* Ошибка: фиксированная высота блока */
+.error-box {
+    height: 14px; /* ← фиксируем пространство! */
+    overflow: hidden;
+    position: relative;
+}
+
+/* Текст ошибки */
+.login-error {
+    font-size: 9px;
+    /*font-style: italic;*/
+    color: #ff0400;
+    font-weight: 600;
+    /*text-align: center;*/
+    text-transform: uppercase;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: all 0.35s ease;
+}
+
+/* Активная ошибка */
+.error-box.show .login-error {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Кнопка */
+.btn-login {
+    width: 100%;
+    height: 42px;
+
+    background: #b48441;
+    border: none;
+    color: #fff;
+
+    font-size: 15px;
+    font-weight: 600;
+    /*border-radius: 6px;*/
+    cursor: pointer;
+    margin-bottom: 2px;
+    transition: all 0.25s ease;
+}
+
+.btn-login:hover {
+    background: #88622d;
+    /*box-shadow: 0 0 10px rgba(9, 185, 162, 0.45);*/
+}
+
+.btn-login:active {
+    transform: scale(0.97);
+}
+
+
+/*____________________________________________*/
+
+.admin__in {
+    text-decoration: none;
+    color: #f1c17f;
+    font-size: 11px;
+    font-weight: 300;
+    font-style:italic;
+    text-transform: uppercase;
+    margin-top: 9px;
+    line-height: 15px;
+    display: block;
+        
+}
+
+
+/*  subscribe  */
+
+.subscribe {
+    width: 100%;
+    max-width: 380px;
+    display: flex;
+}
+
+.subscribe__input {
+    width: 60%;
+    height: 40px;
+    padding: 12px;
+    background: #fff;
+    border: 1px solid #d38d2c;
+    line-height: 1.1;
+    /*letter-spacing: 1px;*/
+    font-size: 14px;
+    font-weight: 700;
+    font-style:italic;
+    color: #000000;
+    font-family: "Roboto", sans-serif;
+
+}
+.subscribe__input::placeholder {
+    color:#888888;
+
+}
+.subscribe__input:focus {
+    outline: 0;
+    border-color: #a36d22;
+}
+
+.subscribe__btn {
+    width: 40%;
+    height: 40px;
+    background-color: #b48441;
+    border: 0;
+    cursor: pointer;
+    line-height: 1.1;
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    font-size: 12px;
+    color: #ffffff;
+    text-transform: uppercase;
+    padding: 12px 30px;
+    transition: 0.3s linear;
+    
+}
+
+.subscribe__btn:hover {
+    background-color: #88622d;
+
+}
+
+
+/* copyright */
+
+.copyright {
+    background-color: #2d3a3b;
+    padding: 5px 0;
+    font-size: 14px;
+    font-weight: 300;
+    color: #f1c17f;
+    text-align: center;
+    border-top: 2px solid #837766;
+    font-style: italic;
+}
+.copyright a {
+    text-decoration: none;
+    color: #837766;
+    
+
+}
+
+/*========= END ========*/
+
+
+/* ====== Адаптив футера ====== */
+
+/* --- Планшеты (до 1024px) --- */
+@media (max-width: 1024px) {
+    .footer__inner {
+        flex-wrap: wrap;
+        gap: 30px;
+    }
+
+    .footer__col--first,
+    .footer__col--second,
+    .footer__col--third {
+        width: 48%;
+    }
+
+    .login-box {
+        width: 100%;
+        max-width: 350px;
+        margin: 0 auto;
+    }
+}
+
+/* --- Телефоны (до 768px) --- */
+@media (max-width: 768px) {
+    .footer__inner {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .footer__col--first,
+    .footer__col--second,
+    .footer__col--third {
+        width: 100%;
+    }
+
+    .blogs__item {
+        justify-content: center;
+    }
+
+    .blogs__img {
+        width: 110px;
+        height: auto;
+    }
+
+    .subscribe {
+        max-width: 100%;
+        justify-content: center;
+    }
+}
+
+/* --- Малые телефоны (до 480px) --- */
+@media (max-width: 480px) {
+
+    .login-box {
+        padding: 20px;
+        width: 100%;
+    }
+
+    .subscribe__input {
+        width: 55%;
+        font-size: 12px;
+    }
+
+    .subscribe__btn {
+        width: 45%;
+        font-size: 11px;
+    }
+
+    .blogs__item {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .blogs__img {
+        margin-bottom: 10px;
+    }
+}

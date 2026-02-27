@@ -1,0 +1,261 @@
+.container {
+    width: 100%;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+.table_public {
+    background-color: #2d3a3b;
+    color: #f1c17f;
+}
+
+/* =============================
+   ADD HEAD (STICKY BLOCK)
+============================= */
+.addHead {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: #2d3a3b;
+    padding-top: 105px;
+}
+
+.residents_text {
+    display: flex;
+    align-items: center;
+    font-size: 25px;
+    letter-spacing: 2px;
+    color: #f1c17f;
+    margin-left: 10px;
+}
+
+/* =============================
+   SEARCH PANEL
+============================= */
+.topControls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+    margin-bottom: 10px;
+    background-color: #2e4244;
+}
+
+.search_text {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 300;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+}
+
+.searchInput {
+    width: 350px;
+    height: 30px;
+    padding: 0 12px;
+    border: 1px solid #f1c17f;
+    background: #2d3a3b;
+    color: #f1c17f;
+}
+
+.searchInput::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+    opacity: 1;
+}
+
+.sortItemSelect,
+.sortSelect {
+    height: 30px;
+    padding: 0 12px;
+    border: 1px solid #f1c17f;
+    background: #2d3a3b;
+    color: #f1c17f;
+    cursor: pointer;
+}
+
+/* pagination */
+.tablePagination {
+    font-size: 14px;
+    font-weight: 300;
+    text-transform: uppercase;
+}
+
+.paginationLabel {
+    color: rgba(255, 255, 255, 0.5);
+    margin-right: 5px;
+    letter-spacing: 1.5px;
+}
+
+.pageSizeBtn15 {
+    background: #284b6b;
+    border: none;
+    padding: 9px 20px;
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 1.5px;
+    color: #2D3A3B;
+    cursor: pointer;
+    transition: 0.3s ease;
+    margin-right: 2px;
+}
+
+.pageSizeBtnAll {
+    background: #284b6b;
+    border: none;
+    padding: 9px 16px;
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 1px;
+    color: #2D3A3B;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.pageSizeBtn15:hover {
+    background: #ff5e01;
+    color: #ffffff;
+
+}
+
+.pageSizeBtnAll:hover {
+    background: #ff5e01;
+    color: #ffffff;
+}
+
+/* =============================
+   TABLE
+============================= */
+.columnHead {
+    min-width: 1300px;
+    display: grid;
+    grid-template-columns: 70px 70px 410px 170px 580px;
+    height: 30px;
+}
+
+.columnHead div {
+    padding: 2px;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.headLineBottom {
+    height: 1px;
+    background-color: #f1c17f;
+}
+
+.tableWrapper {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.tableBody {
+    max-height: calc(30px * 15);
+    overflow-y: auto;
+
+}
+
+/*---------------------------------------------------*/
+.noScroll {
+    max-height: none;
+    overflow-y: visible;
+}
+
+
+.gridTable {
+    min-width: 1300px;
+    display: grid;
+    grid-template-columns: 70px 70px 410px 170px 580px;
+}
+
+.cell {
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    height: 30px;
+    display: flex;
+    align-items: center;
+    color: #fff;
+}
+
+/* Башня */
+.cell:nth-child(5n + 1) {
+    justify-content: center;
+    font-size: 13px;
+    color: #cecece;
+}
+
+/* Номер */
+.cell:nth-child(5n + 2) {
+    justify-content: center;
+    font-size: 13px;
+    color: #cecece;
+}
+
+/* Владелец */
+.cell:nth-child(5n + 3) {
+    /*justify-content: center;*/
+    padding-left: 10px;
+    font-size: 14px;
+    font-weight: 300;
+    letter-spacing: .5px;
+    color: #cecece;
+}
+
+/* Телефон */
+.cell:nth-child(5n + 4) {
+    justify-content: center;
+    letter-spacing: .5px;
+    color: #cecece;
+}
+
+/* Веб-ресурс (5-й столбец) */
+
+.cell:nth-child(5n + 5) {
+    padding-left: 10px;
+}
+
+.website {
+    color: #cecece;
+    /* твой акцентный цвет */
+    text-decoration: none;
+    /* убираем underline */
+    font-weight: 300;
+    font-style: italic;
+    cursor: pointer;
+
+}
+
+/* hover — аккуратный */
+.website:hover {
+    color: #ff8800;
+    text-decoration: underline;
+    /*opacity: 0.9;*/
+}
+
+/* visited — ВАЖНО */
+.website:visited {
+    color: #cecece;
+}
+
+/* =============================
+   FOOTER
+============================= */
+.copyright {
+    padding: 5px 0;
+    text-align: center;
+    font-size: 14px;
+    font-style: italic;
+    border-top: 2px solid #837766;
+}
+
+.copyright a {
+    text-decoration: none;
+    color: #837766;
+}

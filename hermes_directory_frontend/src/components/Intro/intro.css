@@ -1,0 +1,227 @@
+.intro {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-top: 90px; /* высота хедера */
+  align-items: stretch;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: #ffffff;
+}
+
+.intro .container {
+  width: 100%;
+}
+
+.container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0;
+  
+}
+
+.intro__inner {
+  text-align: left;
+}
+
+
+
+
+/*-----------------------*/
+.intro__title1 span {
+  display: block;
+  margin-bottom: 6px; /* или сколько нужно */
+}
+
+/*
+.intro__title1 span {
+  display: block;
+  transform: translateX(-860px);
+  opacity: 0;
+  animation: slideIn 0.5s ease forwards;
+}
+
+.intro__title1 span:nth-child(1) { animation-delay: 0.1s; }
+.intro__title1 span:nth-child(2) { animation-delay: 0.3s; }
+.intro__title1 span:nth-child(3) { animation-delay: 0.5s; }
+
+@keyframes slideIn {
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+*/
+
+
+.intro__title1 span {
+  display: block;
+  opacity: 0;
+  transform: translateX(40px);
+  animation: introLine 1.8s ease forwards;
+}
+
+.intro__title1 span:nth-child(1) {
+  animation-delay: 0.2s;
+}
+.intro__title1 span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.intro__title1 span:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+@keyframes introLine {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/*-----------------------*/
+
+.intro__title1 {
+  font-family: "Montserrat", sans-serif;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 83px;
+  letter-spacing: 0.06em;
+  line-height: 1.15;
+  margin-top: 30px;
+  color: #ffffff;
+  text-shadow:
+    -1px -1px 0 #f17807ff,
+    1px -1px 0 #4e6e77,
+    -1px 1px 0 #020202,
+    1px 1px 0 #000000;
+}
+
+/*.intro__title1::after {
+  content: "";
+  display: block;
+  width: 560px;
+  height: 2px;
+  background-color: #ffffff;
+  margin-top: 5px;
+  opacity: 0.5;
+}*/
+
+.line__x {
+  width: 560px;
+  height: 2px;
+  background-color: #ffffff;
+  margin-top: 5px;
+  opacity: 0.5;
+}
+
+.intro__title {
+  font-family: "Montserrat", sans-serif;
+  margin-top: 20px;
+  font-size: 40px;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  line-height: 50px;
+  color: #ffffff;
+  text-shadow:
+    -1px -1px 0 #f17807ff,
+    1px -1px 0 #4e6e77,
+    -1px 1px 0 #020202,
+    1px 1px 0 #000000;
+}
+/*-----------------------------*/
+.intro__title--link {
+  opacity: 0;
+  /*transform: translateY(10px);*/
+  animation: fadeIn 2.8s ease forwards;
+  animation-delay: 0.3s;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/*------------------------------------------*/
+
+.intro__title--link {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-block;
+  transition: transform 0.2s linear;
+}
+
+.intro__title--link:hover {
+  transform: scale(1.01);
+  /*opacity: 0.85;*/
+}
+
+.line__i {
+  width: 400px;
+  height: 2px;
+  background-color: #ffffff;
+  opacity: 0.5;
+  margin-top: 16px;
+}
+
+.btn__intro {
+    position: relative;
+    display: inline-block;
+
+    padding: 10px 64px;
+    font-size: 14px;
+    font-weight: 300;
+    padding: 6px 68px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #ffffff;
+    text-decoration: none;
+    margin-top: 25px;
+    background-color: rgba(63, 152, 179, 0.1);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 4px;
+    transition: 0.5s ease;
+}
+
+.btn__intro:hover {
+    background-color: rgba(1, 23, 31, 0.4);
+    color: #ff7b00;
+    /*color: rgb(255, 102, 0);*/
+    /*box-shadow: 0 0 6px rgba(39, 160, 160, 0.4);*/
+    /*transform: scale(1.03);*/
+}
+
+.line__ix {
+  width: 100%;
+  max-width: 1300px;
+  height: 2px;
+  background-color: #ff7b00;
+  margin-top: 25px;
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+  .intro__title1 {
+    font-size: 42px;
+  }
+
+  .intro__title {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .intro__title1 {
+    font-size: 32px;
+  }
+
+  .intro__title {
+    font-size: 22px;
+  }
+}

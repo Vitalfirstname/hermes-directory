@@ -1,0 +1,453 @@
+/* =============================
+   GLOBAL
+============================= */
+body {
+    margin: 0;
+    font-family: "Roboto", sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #f1c17f;
+    background-color: #2D3A3B;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+}
+
+.container {
+    width: 100%;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+
+
+
+
+/* =============================
+   ADD HEAD (STICKY BLOCK)
+============================= */
+.add-head {
+    position: sticky;
+    top: 0;
+    z-index: 0;
+    background: #2D3A3B;
+    padding-top: 20px;
+
+}
+
+.head__top {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 50px;
+    margin-bottom: 15px;
+
+}
+
+.head__logo {
+    width: 200px;
+    height: auto;
+    display: block;
+    transition: transform 0.2s linear;
+}
+
+.head__logo:hover {
+    transform: scale(1.04);
+}
+
+.residents_text {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    line-height: 1;
+    font-size: 25px;
+    letter-spacing: 2px;
+    color: #f1c17f;
+}
+
+.table__exit {
+    padding: 3px 12px;
+    font-size: 12px;
+    letter-spacing: 2px;
+    background: #2D3A3B;
+    text-decoration: none;
+    color: #f1c17f;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.4s ease;
+}
+
+.table__exit:hover {
+    background: #202c2c;
+    color: #fff;
+}
+
+
+/* =============================
+   SEARCH PANEL
+============================= */
+.top-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 35px;
+    margin-bottom: 10px;
+}
+
+
+/* Text "ПОИСК" */
+
+.search_text {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 300;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+
+}
+
+/* Search input */
+
+.search-input {
+    width: 350px;
+    height: 30px;
+    padding: 0 12px;
+    border: 1px solid #f1c17f;
+    background: #2D3A3B;
+    color: #f1c17f;
+
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+    opacity: 1;
+}
+
+/* Select fields */
+
+.sort-item-select,
+.sort-select {
+    height: 30px;
+    padding: 0 12px;
+    border: 1px solid #f1c17f;
+    background: #2D3A3B;
+    color: #f1c17f;
+    cursor: pointer;
+}
+
+
+
+/* =============================
+   INPUT ROW (ADD FORM)
+============================= */
+.input-row {
+    min-width: 1300px;
+    display: grid;
+    grid-template-columns: 70px 70px 250px 170px 580px 160px;
+
+}
+
+.input-row input {
+    padding: 2px;
+    padding-left: 6px;
+    border: 1px solid #f1c17f;
+    background: #2D3A3B;
+    color: #ffffff;
+    font-size: 12px;
+    /*text-transform: uppercase;*/
+
+}
+
+.add-btn {
+    background: #2d7a41;
+    border: none;
+    padding: 8px;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #2D3A3B;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.add-btn:hover {
+    background: #01c933;
+    color: #ffffff;
+}
+
+/* =============================
+   COLUMN HEAD
+============================= */
+.column-head {
+    min-width: 1300px;
+    display: grid;
+    grid-template-columns: 70px 70px 250px 170px 580px 160px;
+    background: #2D3A3B;
+    height: 30px;
+}
+
+.column-head div {
+    padding: 5px;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.head__line__bottom {
+
+    height: 1px;
+    background-color: #f1c17f;
+
+}
+
+/* GRID TABLE — полностью правильный вариант */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.grid-table {
+    min-width: 1300px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 70px 70px 250px 170px 580px 160px;
+
+}
+
+/* каждая ячейка таблицы */
+.grid-table .cell {
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #fff;
+    height: 30px;
+    display: flex;
+    align-items: center;
+}
+
+
+
+.cell.actions {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    border: none;
+    padding: 0;
+}
+
+.btn-group {
+    display: grid;
+    width: 100%;
+    /* растягиваем на всю ширину ячейки */
+    height: 95%;
+    grid-template-columns: 1fr 1fr;
+    overflow: hidden;
+
+}
+
+.cancel-btn {
+    background: #585858;
+    border: none;
+    padding: 8px;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #2D3A3B;
+    cursor: pointer;
+    transition: 0.3s ease;
+    width: 100%;
+    height: 100%;
+}
+
+.cancel-btn:hover {
+    background: #f36303;
+    color: #ffffff;
+}
+
+.btn {
+    width: 100%;
+    height: 100%;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.edit-btn {
+    background: #9e810f;
+    color: #2D3A3B;
+    transition: 0.3s ease;
+
+}
+
+.delete-btn {
+    background: #b13b2e;
+    color: #2D3A3B;
+    transition: 0.3s ease;
+}
+
+
+.edit-btn:hover {
+    background: #ffcc00;
+    color: #fff;
+}
+
+.delete-btn:hover {
+    background: #ff3019;
+    color: #fff;
+}
+
+.grid-table .cell:nth-child(6n + 1) {
+    font-weight: 400;
+    font-size: 13px;
+    color: #ebebeb;
+    justify-content: center;
+
+}
+
+.grid-table .cell:nth-child(6n + 2) {
+    font-weight: 300;
+    font-size: 12px;
+    color: #ebebeb;
+    justify-content: center;
+}
+
+.grid-table .cell:nth-child(6n + 3) {
+    font-weight: 300;
+    font-size: 12px;
+    color: #ebebeb;
+    justify-content: center;
+}
+
+.grid-table .cell:nth-child(6n + 4) {
+    font-weight: 300;
+    font-size: 12px;
+    color: #ebebeb;
+    justify-content: center;
+}
+
+.grid-table .cell:nth-child(6n + 5) {
+    padding-left: 10px;
+    color: #d1d1d1;
+}
+
+.grid-table .cell:nth-child(6n + 5) a {
+    font-style: italic;
+    font-weight: 300;
+    font-size: 14px;
+    color: #c5c5c5 !important;
+    padding-left: 10px;
+    text-decoration: underline;
+}
+
+.copyright {
+    background-color: #2d3a3b;
+    padding: 5px 0;
+    font-size: 14px;
+    font-weight: 300;
+    color: #f1c17f;
+    text-align: center;
+    border-top: 2px solid #837766;
+    font-style: italic;
+}
+
+.copyright a {
+    text-decoration: none;
+    color: #837766;
+
+
+
+}
+
+@media (max-width: 768px) {
+
+    /* Выключаем сетку и делаем карточки */
+    .grid-table {
+        display: block;
+    }
+
+    .grid-table .cell {
+        display: block;
+        width: 100%;
+        padding: 10px 0;
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+        height: auto;
+    }
+
+    /* Каждая 6 ячейка = конец карточки */
+    .grid-table .cell:nth-child(6n) {
+        border-bottom: 2px solid #f1c17f;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+
+    /* Заголовки таблицы скрываем */
+    .column-head,
+    .head__line__bottom {
+        display: none;
+    }
+
+    /* Добавляем подписи */
+    .grid-table .cell:nth-child(6n+1)::before {
+        content: "Башня: ";
+    }
+
+    .grid-table .cell:nth-child(6n+2)::before {
+        content: "Номер: ";
+    }
+
+    .grid-table .cell:nth-child(6n+3)::before {
+        content: "Владелец: ";
+    }
+
+    .grid-table .cell:nth-child(6n+4)::before {
+        content: "Телефон: ";
+    }
+
+    .grid-table .cell:nth-child(6n+5)::before {
+        content: "Веб-ресурс: ";
+    }
+
+    /* Блок действий превращаем в кнопки внизу */
+    .cell.actions {
+        display: flex;
+        justify-content: flex-start;
+        padding-top: 10px;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 10px;
+        width: auto;
+        height: auto;
+    }
+
+    .btn {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}
