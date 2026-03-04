@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+﻿import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
@@ -10,7 +10,7 @@ export default defineConfig({
       "/api": {
         target: 'http://192.168.100.30:8000',
         changeOrigin: true,
-        // secure: false, // можно не нужно (для https)
+        // secure: false, // обычно не нужно (для https)
       },
       // если у тебя еще есть media/static эндпоинты:
       // '/media': { target: 'http://192.168.100.30:8000', changeOrigin: true },
