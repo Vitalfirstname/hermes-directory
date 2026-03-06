@@ -1,38 +1,13 @@
+import { Fragment, useMemo, useState } from "react";
+
 import styles from "./ResidentsTable.module.css";
-import { useEffect, useState, Fragment, useMemo } from "react";
-import api from "../../api/api";
 
-export default function ResidentsTable() {
-
-  const [offices, setOffices] = useState([]);
+export default function ResidentsTable({ offices = [], loading = false, error = "" }) {
   const [search, setSearch] = useState("");
   const [sortField, setSortField] = useState("tower");
   const [sortOrder, setSortOrder] = useState("asc");
   const [limit, setLimit] = useState(15);
 
-
-
-
-  // ===== DATA LOAD =====
-  useEffect(() => {
-    api.get("/offices/")
-      .then((res) => {
-        console.log("STATUS:", res.status);
-        console.log("DATA:", res.data);
-
-        // если DRF с пагинацией:
-        const data = Array.isArray(res.data)
-          ? res.data
-          : res.data.results ?? [];
-
-        setOffices(data);
-      })
-      .catch((err) => {
-        console.error("API ERROR:", err);
-      });
-  }, []);
-
-  // ===== FILTER =====
   const filteredOffices = useMemo(() => {
     if (!search.trim()) return offices;
 
@@ -41,13 +16,9 @@ export default function ResidentsTable() {
     return offices.filter((office) =>
       [office.tower, office.number, office.owner, office.phone]
         .filter(Boolean)
-        .some((field) =>
-          field.toString().toLowerCase().includes(query)
-        )
+        .some((field) => field.toString().toLowerCase().includes(query))
     );
   }, [search, offices]);
-
-  // ===== SORT =====
 
   const sortedOffices = useMemo(() => {
     const sorted = [...filteredOffices];
@@ -76,19 +47,10 @@ export default function ResidentsTable() {
     return sortedOffices.slice(0, limit);
   }, [sortedOffices, limit]);
 
-
-
-
-
-  // ===== RENDER =====
-
-
   return (
     <section className={styles.table_public} id="table_public">
       <div className={styles.container}>
-        {/* FIXED HEAD */}
         <div className={styles.addHead}>
-          {/* SEARCH PANEL */}
           <div className={styles.topControls}>
             <div className={styles.residents_text}>РЕЗИДЕНТЫ</div>
 
@@ -125,12 +87,15 @@ export default function ResidentsTable() {
 
             <div className={styles.tablePagination}>
               <span className={styles.paginationLabel}>список</span>
-              <button className={styles.pageSizeBtn15} onClick={() => setLimit(15)}>15</button>
-              <button className={styles.pageSizeBtnAll} onClick={() => setLimit("all")}>Все</button>
+              <button className={styles.pageSizeBtn15} onClick={() => setLimit(15)}>
+                15
+              </button>
+              <button className={styles.pageSizeBtnAll} onClick={() => setLimit("all")}>
+                Все
+              </button>
             </div>
           </div>
 
-          {/* COLUMN TITLES */}
           <div className={styles.columnHead}>
             <div>башня</div>
             <div>номер</div>
@@ -142,37 +107,32 @@ export default function ResidentsTable() {
           <div className={styles.headLineBottom} />
         </div>
 
-        {/* TABLE BODY */}
         <div className={styles.tableWrapper}>
-          <div
-            className={`${styles.tableBody} ${limit === "all" ? styles.noScroll : ""
-              }`}
-          >
+          <div className={`${styles.tableBody} ${limit === "all" ? styles.noScroll : ""}`}>
+            {loading && <div className={styles.cell}>Загрузка данных...</div>}
+            {!loading && error && <div className={styles.cell}>{error}</div>}
+            {!loading && !error && (
+              <div className={styles.gridTable}>
+                {visibleOffices.map((office) => (
+                  <Fragment key={office.id}>
+                    <div className={styles.cell}>{office.tower}</div>
+                    <div className={styles.cell}>{office.number}</div>
+                    <div className={styles.cell}>{office.owner}</div>
+                    <div className={styles.cell}>{office.phone || "—"}</div>
 
-
-            <div className={styles.gridTable}>
-              {visibleOffices.map((office) => (
-
-                <Fragment key={office.id}>
-                  <div className={styles.cell}>{office.tower}</div>
-                  <div className={styles.cell}>{office.number}</div>
-                  <div className={styles.cell}>{office.owner}</div>
-                  <div className={styles.cell}>{office.phone || "—"}</div>
-
-                  <div className={styles.cell}>
-                    {office.website ? (
-                      <a href={office.website} target="_blank" rel="noreferrer" className={styles.website}>
-                        {office.website}
-                      </a>
-
-                    ) : (
-                      "—"
-                    )}
-                  </div>
-                </Fragment>
-              ))}
-            </div>
-
+                    <div className={styles.cell}>
+                      {office.website ? (
+                        <a href={office.website} target="_blank" rel="noreferrer" className={styles.website}>
+                          {office.website}
+                        </a>
+                      ) : (
+                        "—"
+                      )}
+                    </div>
+                  </Fragment>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -1,5 +1,4 @@
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import AllowAny
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -9,12 +8,13 @@ from rest_framework.permissions import IsAuthenticated
 
 from .models import Office
 from .serializers import OfficeSerializer
+from .permissions import IsAdminOrReadOnly
 
 
 class OfficeViewSet(ModelViewSet):
     queryset = Office.objects.all().order_by('tower', 'number')
     serializer_class = OfficeSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminOrReadOnly]
 
     filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
     search_fields = ['number', 'owner', 'tower', 'phone', 'website']

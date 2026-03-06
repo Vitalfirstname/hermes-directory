@@ -1,0 +1,118 @@
+python -m venv venv    создать виртуальное окружение
+
+.\venv\Scripts\activate  активировать виртуальное окружение
+
+python.exe -m pip install --upgrade pip
+
+pip install -r requirements.txt
+
+pip install django
+
+git init
+
+pip install django
+
+pip install djangorestframework
+
+pip install drf-yasg
+
+pip install djangorestframework-authtoken
+
+pip install django-filter
+
+pip install psycopg2-binary
+
+
+
+https://www.django-rest-framework.org/api-guide/filtering/
+
+pip freeze > requirements.txt     команда создаст requirements.txt
+
+
+python -m django --version команда покажет версию
+
+python -m django startproject dnf команда создаст папку "dnf" с базовой структурой Django
+
+Remove-Item -Recurse -Force .\dnf команда снесёт папку "dnf"
+
+django-admin startproject dnf запускает отдельный исполняемый файл,
+    требует, чтобы путь к django-admin.exe был в переменной PATH
+    Может конфликтовать, если несколько Python-установок
+
+    Основные команды:
+    runserver
+👉 python manage.py runserver
+Запускает локальный сервер на http://127.0.0.1:8000/
+
+startapp <имя>
+👉 python manage.py startapp myapp
+Создаёт новое приложение внутри проекта.
+
+showmigrations
+👉 python manage.py showmigrations
+Показывает список всех миграций и их статус.
+
+makemigrations
+👉 python manage.py makemigrations
+Фиксирует изменения в моделях (создаёт миграции).
+
+migrate
+👉 python manage.py migrate
+Применяет миграции к базе данных.
+
+createsuperuser
+👉 python manage.py createsuperuser
+Создаёт администратора для входа в админку.
+
+shell
+👉 python manage.py shell
+Запускает интерактивный Python с доступом к Django-проекту.
+
+check
+👉 python manage.py check
+Проверяет проект на ошибки конфигурации.
+
+collectstatic
+👉 python manage.py collectstatic
+Собирает статические файлы в одну директорию (для продакшена).
+
+cd mf отправится в mf "mf" имя папки
+cd .. выйдет обратно)
+cd C:\DJANGO Хочешь вернуться в любую конкретную папку — можно указать полный путь:
+mkdir djangotutorial создаст папку (директорию) с названием "djangotutorial"
+
+.\venv\Scripts\activate
+
+cd .\hermes_directory_backend
+
+python manage.py runserver
+
+Запустить Django наружу!!!!!!!!!!!!!!
+
+python manage.py runserver 0.0.0.0:8000
+
+И в settings.py добавить:
+
+ALLOWED_HOSTS = ["192.168.100.30", "127.0.0.1", "localhost"]
+# на время отладки можно так:
+# ALLOWED_HOSTS = ["*"]
+!!!!!!!!!!!!!!
+
+
+ADMIN:
+login:verycool
+password:3007202530072025
+
+USER:
+login:cool
+password:0108202501082025
+
+ЧЕК:
+127.0.0.1:8000/admin/
+127.0.0.1:8000/api/
+127.0.0.1:8000/api/offices/
+127.0.0.1:8000/redoc/
+127.0.0.1:8000/swagger/
+127.0.0.1:8000/admin/api_hermes/office/
+http://127.0.0.1:8000/api/offices/?search= после "равно" вводится один из параметров (id,tower,number,owner,)
+https://www.django-rest-framework.org/api-guide/filtering/

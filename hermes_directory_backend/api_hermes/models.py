@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import URLValidator
 
 
 class Office(models.Model):
@@ -6,7 +7,12 @@ class Office(models.Model):
     number = models.CharField(max_length=20)
     owner = models.CharField(max_length=100)
     phone = models.CharField(max_length=20, null=True, blank=True)
-    website = models.CharField(max_length=200, null=True, blank=True)
+    website = models.CharField(
+        max_length=200,
+        null=True,
+        blank=True,
+        validators=[URLValidator(schemes=["http", "https"])],
+    )
 
 
     def __str__(self):
