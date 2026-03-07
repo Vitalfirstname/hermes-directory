@@ -128,3 +128,76 @@ Changed file:
 ## 9) Notes for next session
 - Worktree still contains unrelated pre-existing untracked files (`info.txt`, `requirements.txt`) not modified in this session.
 - Primary continuation point: production hardening and CI checks, or frontend/backend e2e smoke tests.
+
+---
+
+# Session Changes (2026-03-07)
+
+## 1) Production hardening (Django prod profile)
+- Strengthened `base_hermes/settings/prod.py` with production security defaults:
+  - `SECURE_SSL_REDIRECT`
+  - `SESSION_COOKIE_SECURE`
+  - `CSRF_COOKIE_SECURE`
+  - `SECURE_HSTS_SECONDS`
+  - `SECURE_HSTS_INCLUDE_SUBDOMAINS`
+  - `SECURE_HSTS_PRELOAD`
+  - `SECURE_CONTENT_TYPE_NOSNIFF`
+  - `X_FRAME_OPTIONS`
+  - `SECURE_REFERRER_POLICY`
+- Added optional proxy-aware HTTPS support via `USE_X_FORWARDED_PROTO` -> `SECURE_PROXY_SSL_HEADER`.
+- Added production guard: startup now raises `ImproperlyConfigured` when `CORS_ALLOW_ALL_ORIGINS=True` in prod profile.
+
+Changed file:
+- `hermes_directory_backend/base_hermes/settings/prod.py`
+
+## 2) Env template expansion
+- Extended backend `.env.example` with the new production security variables so deployment config is explicit and reproducible.
+
+Changed file:
+- `hermes_directory_backend/.env.example`
+
+## 3) CI checks automation (GitHub Actions)
+- Added workflow `.github/workflows/ci.yml` with two jobs:
+  - `backend`: `python manage.py check`, `python manage.py makemigrations --check`, `python manage.py test api_hermes -v 2`
+  - `frontend`: `npm ci`, `npm run build`
+- Triggered on `push` to `main`/`master` and on all `pull_request` events.
+
+Added file:
+- `.github/workflows/ci.yml` (new)
+
+## 4) Verified commands run in session
+- `python manage.py check` (backend)
+- `python manage.py makemigrations --check` (backend)
+- `python manage.py test api_hermes -v 2` (backend, 18 tests passed)
+- `npm run build` (frontend, build passed)
+
+## 5) Notes for next session
+- Next logical step from roadmap: add e2e smoke tests for public routes and admin auth flow.
+
+## 6) E2E smoke tests (frontend + backend integration)
+- Added minimal Playwright smoke coverage for key flows:
+  - `/` opens
+  - `/residents` opens and shows seeded resident data
+  - `/admin/panel` redirects to public route without valid session
+  - staff login from public page works
+  - `/admin/panel` is accessible after login
+  - logout clears both JWT tokens and returns to public route
+- Added deterministic backend seed script for e2e user/data setup:
+  - staff user: `e2e_staff`
+  - office record owner: `E2E Smoke Resident`
+- Added Playwright config with two `webServer` entries:
+  - Django backend (`runserver` + migrate + seed)
+  - Vite frontend (`npm run dev`)
+- Added one-command local e2e run:
+  - `npm run test:e2e:smoke` (from `hermes_directory_frontend/`)
+
+Changed files:
+- `hermes_directory_frontend/package.json`
+- `hermes_directory_frontend/package-lock.json`
+- `hermes_directory_frontend/vite.config.js`
+- `hermes_directory_frontend/playwright.smoke.config.js` (new)
+- `hermes_directory_frontend/e2e/smoke.spec.js` (new)
+- `hermes_directory_backend/scripts/seed_e2e_smoke.py` (new)
+
+## 7) Verified commands run in session (additional)
+- `npm run test:e2e:smoke` (3 smoke tests passed)
