@@ -170,5 +170,6 @@ python manage.py check
 4. Run sanity checks before deploy:
    - `python manage.py check --deploy`
    - `python manage.py migrate`
+   - `python manage.py collectstatic --noinput`
 5. Health endpoint for runtime probes:
    - `GET /api/health/` (expects `{"status":"ok","database":"ok"}` on healthy instance)

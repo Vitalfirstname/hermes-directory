@@ -231,3 +231,29 @@ Changed files:
 - `python manage.py check --deploy` (prod profile env injected)
 - `python manage.py test api_hermes -v 2` (19 tests passed)
 - `npm run test:e2e:smoke` (3 smoke tests passed)
+
+## 10) Deploy-readiness CI pipeline (roadmap continuation)
+- Added dependency required for PostgreSQL runtime in production:
+  - `psycopg[binary]==3.2.12` in root `requirements.txt`
+- Added `STATIC_ROOT` to base settings:
+  - `STATIC_ROOT = BASE_DIR / "staticfiles"`
+  - enables `collectstatic --noinput` in CI/deploy pipeline
+- Added new blocking CI job `deploy-readiness`:
+  - waits for `backend`, `frontend`, `e2e-smoke`
+  - runs with prod profile env (`DJANGO_SETTINGS_MODULE=base_hermes.settings.prod`)
+  - executes: `migrate --noinput`, `collectstatic --noinput`, runtime health probe `/api/health/`
+  - sets `SECURE_SSL_REDIRECT=False` only for this CI smoke runtime check
+- Updated backend deploy checklist to include `collectstatic`.
+
+Changed files:
+- `requirements.txt`
+- `hermes_directory_backend/base_hermes/settings/base.py`
+- `.github/workflows/ci.yml`
+- `hermes_directory_backend/README.md.txt`
+
+## 11) Verified commands run in session (additional)
+- `python manage.py test api_hermes -v 2` (19 tests passed)
+- `npm run test:e2e:smoke` (3 smoke tests passed)
+- `python manage.py migrate --noinput` (prod profile env injected)
+- `python manage.py collectstatic --noinput` (prod profile env injected)
+- runtime probe via `curl http://127.0.0.1:8001/api/health/` against `runserver` on prod profile env
