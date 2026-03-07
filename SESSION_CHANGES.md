@@ -190,6 +190,7 @@ Added file:
   - Vite frontend (`npm run dev`)
 - Added one-command local e2e run:
   - `npm run test:e2e:smoke` (from `hermes_directory_frontend/`)
+  - first run prerequisite: `npx playwright install chromium`
 
 Changed files:
 - `hermes_directory_frontend/package.json`
