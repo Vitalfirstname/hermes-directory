@@ -231,3 +231,11 @@ class OfficeValidationTests(APITestCase):
         response = self.client.post(self.url, payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("number", response.data)
+
+
+class HealthEndpointTests(APITestCase):
+    def test_health_endpoint_returns_200_with_database_ok(self):
+        response = self.client.get("/api/health/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get("status"), "ok")
+        self.assertEqual(response.data.get("database"), "ok")

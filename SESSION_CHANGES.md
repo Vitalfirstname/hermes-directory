@@ -202,3 +202,32 @@ Changed files:
 
 ## 7) Verified commands run in session (additional)
 - `npm run test:e2e:smoke` (3 smoke tests passed)
+
+## 8) Production DB/runtime hardening and deploy gate
+- Added PostgreSQL support in production settings via env:
+  - `USE_POSTGRES=True` enables PostgreSQL backend
+  - required in this mode: `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_HOST`
+  - optional: `POSTGRES_PORT` (default `5432`), `POSTGRES_CONN_MAX_AGE` (default `60`)
+- Added runtime health endpoint:
+  - `GET /api/health/`
+  - returns `200 {"status":"ok","database":"ok"}` when DB is reachable
+  - returns `503 {"status":"degraded","database":"unavailable"}` on DB connectivity failure
+- Added backend test coverage for health endpoint.
+- CI backend job now includes deploy gate:
+  - `python manage.py check --deploy` with explicit production env values
+  - production profile loaded via `DJANGO_SETTINGS_MODULE=base_hermes.settings.prod` in that step
+- Added short production deploy checklist in backend README.
+
+Changed files:
+- `hermes_directory_backend/base_hermes/settings/prod.py`
+- `hermes_directory_backend/.env.example`
+- `hermes_directory_backend/api_hermes/views.py`
+- `hermes_directory_backend/api_hermes/urls.py`
+- `hermes_directory_backend/api_hermes/tests.py`
+- `.github/workflows/ci.yml`
+- `hermes_directory_backend/README.md.txt`
+
+## 9) Verified commands run in session (additional)
+- `python manage.py check --deploy` (prod profile env injected)
+- `python manage.py test api_hermes -v 2` (19 tests passed)
+- `npm run test:e2e:smoke` (3 smoke tests passed)

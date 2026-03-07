@@ -21,6 +21,31 @@ CORS_ALLOW_ALL_ORIGINS = env_bool("CORS_ALLOW_ALL_ORIGINS", False)  # noqa: F405
 CORS_ALLOWED_ORIGINS = env_list("CORS_ALLOWED_ORIGINS")  # noqa: F405
 CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS")  # noqa: F405
 
+use_postgres = env_bool("USE_POSTGRES", False) or bool(os.getenv("POSTGRES_DB"))  # noqa: F405
+if use_postgres:
+    postgres_name = os.getenv("POSTGRES_DB")
+    postgres_user = os.getenv("POSTGRES_USER")
+    postgres_password = os.getenv("POSTGRES_PASSWORD")
+    postgres_host = os.getenv("POSTGRES_HOST")
+    postgres_port = os.getenv("POSTGRES_PORT", "5432")
+
+    if not all([postgres_name, postgres_user, postgres_password, postgres_host]):
+        raise ImproperlyConfigured(
+            "POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD and POSTGRES_HOST are required when USE_POSTGRES=True"
+        )
+
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": postgres_name,
+            "USER": postgres_user,
+            "PASSWORD": postgres_password,
+            "HOST": postgres_host,
+            "PORT": postgres_port,
+            "CONN_MAX_AGE": int(os.getenv("POSTGRES_CONN_MAX_AGE", "60")),
+        }
+    }
+
 if CORS_ALLOW_ALL_ORIGINS:
     raise ImproperlyConfigured("CORS_ALLOW_ALL_ORIGINS must be False in production")
 

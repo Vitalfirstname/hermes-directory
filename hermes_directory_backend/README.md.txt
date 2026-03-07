@@ -156,3 +156,19 @@ python manage.py runserver
 set DJANGO_SETTINGS_MODULE=base_hermes.settings.prod
 python manage.py check
 ```
+
+## Production deploy checklist
+
+1. Set `DJANGO_SETTINGS_MODULE=base_hermes.settings.prod`.
+2. Configure required security env vars:
+   - `SECRET_KEY`
+   - `ALLOWED_HOSTS`
+3. Optional PostgreSQL setup (recommended for production):
+   - `USE_POSTGRES=True`
+   - `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_HOST`
+   - optional: `POSTGRES_PORT`, `POSTGRES_CONN_MAX_AGE`
+4. Run sanity checks before deploy:
+   - `python manage.py check --deploy`
+   - `python manage.py migrate`
+5. Health endpoint for runtime probes:
+   - `GET /api/health/` (expects `{"status":"ok","database":"ok"}` on healthy instance)

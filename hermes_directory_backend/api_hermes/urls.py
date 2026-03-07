@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from .views import OfficeViewSet, MeView
+from .views import OfficeViewSet, MeView, HealthView
 
 router = DefaultRouter()
 router.register(r'offices', OfficeViewSet, basename='office')
@@ -17,4 +17,5 @@ urlpatterns = [
 
     # текущий пользователь
     path('auth/me/', MeView.as_view(), name='auth_me'),
+    path('health/', HealthView.as_view(), name='health'),
 ]

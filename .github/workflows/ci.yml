@@ -30,6 +30,15 @@ jobs:
       - name: Django check
         run: python manage.py check
 
+      - name: Django deploy check (production profile)
+        env:
+          DJANGO_SETTINGS_MODULE: base_hermes.settings.prod
+          SECRET_KEY: ci-this-is-a-long-temporary-secret-key-for-deploy-check-1234567890
+          ALLOWED_HOSTS: localhost,127.0.0.1,testserver
+          CORS_ALLOWED_ORIGINS: http://localhost:5173
+          CSRF_TRUSTED_ORIGINS: http://localhost:5173
+        run: python manage.py check --deploy
+
       - name: Migrations check
         run: python manage.py makemigrations --check
 
