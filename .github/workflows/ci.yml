@@ -217,7 +217,7 @@ jobs:
   post-deploy-smoke:
     runs-on: ubuntu-latest
     needs: [deploy-readiness-postgres]
-    if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && secrets.STAGING_BASE_URL != '' && secrets.STAGING_ADMIN_USERNAME != '' && secrets.STAGING_ADMIN_PASSWORD != '' }}
+    if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') }}
     env:
       PLAYWRIGHT_BASE_URL: ${{ secrets.STAGING_BASE_URL }}
       PLAYWRIGHT_USE_LOCAL_SERVERS: "false"
@@ -230,6 +230,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Verify staging secrets are present
+        run: |
+          if [ -z "${PLAYWRIGHT_BASE_URL}" ]; then
+            echo "Missing required secret: STAGING_BASE_URL"
+            exit 1
+          fi
+          if [ -z "${E2E_ADMIN_USERNAME}" ]; then
+            echo "Missing required secret: STAGING_ADMIN_USERNAME"
+            exit 1
+          fi
+          if [ -z "${E2E_ADMIN_PASSWORD}" ]; then
+            echo "Missing required secret: STAGING_ADMIN_PASSWORD"
+            exit 1
+          fi
 
       - name: Setup Node
         uses: actions/setup-node@v4
