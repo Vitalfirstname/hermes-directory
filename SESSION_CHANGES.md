@@ -257,3 +257,53 @@ Changed files:
 - `python manage.py migrate --noinput` (prod profile env injected)
 - `python manage.py collectstatic --noinput` (prod profile env injected)
 - runtime probe via `curl http://127.0.0.1:8001/api/health/` against `runserver` on prod profile env
+
+## 12) Continuation point for next session
+- Roadmap status: production hardening, CI checks, e2e smoke, and deploy-readiness gate are completed.
+- Primary next step:
+  - connect and validate real PostgreSQL on staging/production env (not only config support in code)
+  - run migrations on target env and verify `/api/health/` against real deployment
+  - wire smoke e2e to run against deployed staging URL after deploy (instead of only local Playwright webServer mode)
+- Keep current constraints:
+  - no API contract changes
+  - minimal infra changes per iteration
+
+## 13) CI PostgreSQL production-profile gate (roadmap continuation)
+- Added new blocking CI job `deploy-readiness-postgres` in `.github/workflows/ci.yml`.
+- Job uses GitHub Actions `postgres:17` service and runs Django with:
+  - `DJANGO_SETTINGS_MODULE=base_hermes.settings.prod`
+  - `USE_POSTGRES=True`
+  - `POSTGRES_*` env vars pointed to CI service
+- Job verifies production runtime path on PostgreSQL:
+  - `python manage.py migrate --noinput`
+  - `python manage.py collectstatic --noinput`
+  - runtime probe `/api/health/`
+- This keeps API contract unchanged and moves roadmap forward toward real staging/prod database validation.
+
+## 14) Post-deploy smoke against staging URL (roadmap continuation)
+- Updated Playwright smoke config to support two modes:
+  - local mode (default): starts backend/frontend via `webServer`
+  - remote mode: uses external `PLAYWRIGHT_BASE_URL` and does not start local servers
+- Parameterized smoke test credentials/data markers via env:
+  - `E2E_ADMIN_USERNAME`
+  - `E2E_ADMIN_PASSWORD`
+  - `E2E_RESIDENT_OWNER`
+- Added CI job `post-deploy-smoke` in `.github/workflows/ci.yml`:
+  - runs after `deploy-readiness-postgres`
+  - executes smoke tests against deployed staging URL using secrets:
+    - `STAGING_BASE_URL`
+    - `STAGING_ADMIN_USERNAME`
+    - `STAGING_ADMIN_PASSWORD`
+  - optional owner marker from repo variable:
+    - `STAGING_RESIDENT_OWNER`
+- Job condition:
+  - runs on `push` to `main/master` when required staging secrets are set
+  - keeps PR pipeline stable if staging secrets are intentionally absent
+
+Changed files:
+- `hermes_directory_frontend/playwright.smoke.config.js`
+- `hermes_directory_frontend/e2e/smoke.spec.js`
+- `.github/workflows/ci.yml`
+
+## 15) Verified commands run in session (additional)
+- `npm run test:e2e:smoke` (local mode, 3 tests passed)
