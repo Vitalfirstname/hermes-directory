@@ -1,20 +1,22 @@
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import AllowAny
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
+from django.db import connection
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from .models import Office
 from .serializers import OfficeSerializer
+from .permissions import IsAdminOrReadOnly
 
 
 class OfficeViewSet(ModelViewSet):
     queryset = Office.objects.all().order_by('tower', 'number')
     serializer_class = OfficeSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminOrReadOnly]
 
     filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
     search_fields = ['number', 'owner', 'tower', 'phone', 'website']
@@ -38,3 +40,20 @@ class MeView(APIView):
             "is_staff": user.is_staff,
             "is_superuser": user.is_superuser,
         })
+
+
+class HealthView(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def get(self, request):
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT 1")
+                cursor.fetchone()
+            return Response({"status": "ok", "database": "ok"}, status=status.HTTP_200_OK)
+        except Exception:
+            return Response(
+                {"status": "degraded", "database": "unavailable"},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )

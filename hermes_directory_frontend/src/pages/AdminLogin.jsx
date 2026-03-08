@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/api";
+import api, { setAuthTokens } from "../api/api";
 
 export default function AdminLogin() {
   const [username, setUser] = useState("");
@@ -19,7 +19,7 @@ export default function AdminLogin() {
         password,
       });
 
-      localStorage.setItem("token", res.data.access);
+      setAuthTokens(res.data.access, res.data.refresh);
       navigate("/admin/panel");
     } catch (err) {
       setError("Неверный логин или пароль");

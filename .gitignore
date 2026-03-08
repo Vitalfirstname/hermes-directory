@@ -6,6 +6,7 @@
 # Env / secrets
 .env
 .env.*
+!hermes_directory_backend/.env.example
 *.local
 
 # Python / Django

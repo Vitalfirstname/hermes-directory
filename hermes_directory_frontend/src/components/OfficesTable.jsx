@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from "../api/api";
+import api, { logoutAndRedirect } from "../api/api";
 import "../styles/table_admin.css";
 import logo from "../assets/img/bc_hermes_logo.svg";
 
@@ -122,8 +122,7 @@ export default function OfficesTable() {
             href="/"
             onClick={(e) => {
               e.preventDefault();
-              localStorage.removeItem("token");  // удаляем JWT
-              window.location.href = "/";        // переходим на главную
+              logoutAndRedirect();
             }}
           >
             <img src={logo} className="head__logo" alt="Гермес" />
@@ -141,8 +140,7 @@ export default function OfficesTable() {
             className="table__exit"
             onClick={(e) => {
               e.preventDefault();
-              localStorage.removeItem("token");  // удалить токен
-              window.location.href = "/";        // перейти на главную
+              logoutAndRedirect();
             }}
           >
             ВЫХОД
@@ -263,3 +261,4 @@ export default function OfficesTable() {
     </div>
   );
 }
+
