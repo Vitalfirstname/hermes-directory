@@ -297,8 +297,8 @@ Changed files:
   - optional owner marker from repo variable:
     - `STAGING_RESIDENT_OWNER`
 - Job condition:
-  - runs on `push` to `main/master` when required staging secrets are set
-  - keeps PR pipeline stable if staging secrets are intentionally absent
+  - runs on `push` to `main/master` (no secrets check at job-level `if`)
+  - required staging secrets are validated in the first step `Verify staging secrets are present` with explicit `exit 1` on missing values
 
 Changed files:
 - `hermes_directory_frontend/playwright.smoke.config.js`
@@ -307,3 +307,38 @@ Changed files:
 
 ## 15) Verified commands run in session (additional)
 - `npm run test:e2e:smoke` (local mode, 3 tests passed)
+
+## 17) Local production runtime verification (2026-03-09)
+- Staging execution intentionally skipped (no real staging environment available).
+- Verified production profile locally against PostgreSQL:
+  - backend launched with `DJANGO_SETTINGS_MODULE=base_hermes.settings.prod`
+  - PostgreSQL path validated with `USE_POSTGRES=True` and `POSTGRES_*` env vars
+  - `python manage.py migrate --noinput` passed on PostgreSQL
+  - `python manage.py collectstatic --noinput` passed
+  - `GET /api/health/` returned `{"status":"ok","database":"ok"}`
+- Added backend documentation section:
+  - `Local production mode run (verified)` with exact local commands and env vars
+
+Changed file:
+- `hermes_directory_backend/README.md.txt`
+
+## 16) Staging smoke handoff checkpoint (2026-03-08)
+- Git state aligned before handoff:
+  - current branch: `hardening/roadmap-phase-2`
+  - `HEAD == main == origin/main` at `c655c8691c650fbc46bc2de5f5e8bc52a3be582c`
+- Verified from git object model:
+  - `.github/workflows/ci.yml` exists and contains `post-deploy-smoke`
+  - Playwright smoke files exist:
+    - `hermes_directory_frontend/playwright.smoke.config.js`
+    - `hermes_directory_frontend/e2e/smoke.spec.js`
+- Documentation update completed:
+  - root `README.md` now includes a dedicated section `Post-Deploy Smoke (staging)` with required GitHub Secrets/Variables and env mapping.
+- Current status:
+  - repository is ready to run `post-deploy-smoke` against staging
+  - manual GitHub setup is still pending and **not done yet**:
+    - Secrets: `STAGING_BASE_URL`, `STAGING_ADMIN_USERNAME`, `STAGING_ADMIN_PASSWORD`
+    - Optional Variable: `STAGING_RESIDENT_OWNER`
+  - trigger push to `main/master` to start `post-deploy-smoke` is also **not done yet**
+- Next exact action when resuming:
+  1. create the required GitHub secrets/variable in repo settings
+  2. push an empty commit to `main` to trigger CI and verify `post-deploy-smoke`

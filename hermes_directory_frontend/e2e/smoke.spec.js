@@ -30,10 +30,6 @@ test("admin access, staff login, and logout flow", async ({ page }) => {
   await page.locator(".table__exit").click();
   await expect(page).toHaveURL(/\/$/);
 
-  const sessionState = await page.evaluate(() => ({
-    access: window.localStorage.getItem("access_token"),
-    refresh: window.localStorage.getItem("refresh_token"),
-  }));
-  expect(sessionState.access).toBeNull();
-  expect(sessionState.refresh).toBeNull();
+  await page.goto("/admin/panel");
+  await expect(page).toHaveURL(/\/$/);
 });

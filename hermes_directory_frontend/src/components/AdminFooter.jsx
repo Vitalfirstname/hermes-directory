@@ -1,5 +1,5 @@
 import { useState } from "react";
-import api, { setAuthTokens } from "../api/api";
+import api from "../api/api";
 import SmoothNavHashLink from "../utils/SmoothNavHashLink";
 
 
@@ -31,9 +31,9 @@ export default function AdminFooter() {
                 username,
                 password,
             });
-
-            // Save JWT pair
-            setAuthTokens(res.data.access, res.data.refresh);
+            if (!res?.status || res.status !== 200) {
+                throw new Error("Login failed");
+            }
 
             // Redirect
             window.location.href = "/admin/panel";

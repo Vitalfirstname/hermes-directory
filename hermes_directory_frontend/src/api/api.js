@@ -2,35 +2,17 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: "/api",
+  withCredentials: true,
 });
-
-const ACCESS_TOKEN_KEY = "access_token";
-const REFRESH_TOKEN_KEY = "refresh_token";
 
 let isRefreshing = false;
 let refreshQueue = [];
 
-function getAccessToken() {
-  return localStorage.getItem(ACCESS_TOKEN_KEY);
-}
-
-function getRefreshToken() {
-  return localStorage.getItem(REFRESH_TOKEN_KEY);
-}
-
-function setAuthTokens(access, refresh) {
-  if (access) {
-    localStorage.setItem(ACCESS_TOKEN_KEY, access);
-  }
-
-  if (refresh) {
-    localStorage.setItem(REFRESH_TOKEN_KEY, refresh);
-  }
-}
-
-function clearAuthTokens() {
-  localStorage.removeItem(ACCESS_TOKEN_KEY);
-  localStorage.removeItem(REFRESH_TOKEN_KEY);
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(";").shift();
+  return "";
 }
 
 function processRefreshQueue(error, token = null) {
@@ -47,15 +29,23 @@ function processRefreshQueue(error, token = null) {
 }
 
 function logoutAndRedirect() {
-  clearAuthTokens();
-  window.location.href = "/";
+  return api
+    .post("auth/logout/", {})
+    .catch(() => null)
+    .finally(() => {
+      window.location.href = "/";
+    });
 }
 
 api.interceptors.request.use((config) => {
-  const accessToken = getAccessToken();
-
-  if (accessToken) {
-    config.headers.Authorization = `Bearer ${accessToken}`;
+  const unsafeMethod = ["post", "put", "patch", "delete"].includes(
+    (config.method || "").toLowerCase()
+  );
+  if (unsafeMethod) {
+    const csrfToken = getCookie("csrftoken");
+    if (csrfToken) {
+      config.headers["X-CSRFToken"] = csrfToken;
+    }
   }
 
   return config;
@@ -66,23 +56,19 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     const status = error.response?.status;
-    const refreshToken = getRefreshToken();
 
     const isRefreshRequest = originalRequest?.url?.includes("auth/refresh/");
     const isLoginRequest = originalRequest?.url?.includes("auth/login/");
+    const isLogoutRequest = originalRequest?.url?.includes("auth/logout/");
 
     if (
       status !== 401 ||
       !originalRequest ||
       originalRequest._retry ||
       isRefreshRequest ||
-      isLoginRequest
+      isLoginRequest ||
+      isLogoutRequest
     ) {
-      return Promise.reject(error);
-    }
-
-    if (!refreshToken) {
-      logoutAndRedirect();
       return Promise.reject(error);
     }
 
@@ -102,23 +88,22 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      const refreshResponse = await axios.post("/api/auth/refresh/", {
-        refresh: refreshToken,
-      });
+      await axios.post(
+        "/api/auth/refresh/",
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+          },
+        }
+      );
 
-      const newAccessToken = refreshResponse.data?.access;
-      if (!newAccessToken) {
-        throw new Error("No access token in refresh response");
-      }
-
-      setAuthTokens(newAccessToken, refreshToken);
-      processRefreshQueue(null, newAccessToken);
-
-      originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+      processRefreshQueue(null, "refreshed");
       return api(originalRequest);
     } catch (refreshError) {
       processRefreshQueue(refreshError, null);
-      logoutAndRedirect();
+      await logoutAndRedirect();
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;
@@ -126,12 +111,6 @@ api.interceptors.response.use(
   }
 );
 
-export {
-  getAccessToken,
-  getRefreshToken,
-  setAuthTokens,
-  clearAuthTokens,
-  logoutAndRedirect,
-};
+export { logoutAndRedirect };
 
 export default api;

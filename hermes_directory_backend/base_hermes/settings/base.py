@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
     "base_hermes",
     "api_hermes",
     "drf_yasg",
@@ -116,18 +117,35 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "api_hermes.authentication.CookieJWTAuthentication",
     ),
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+    "DEFAULT_PAGINATION_CLASS": "api_hermes.pagination.DefaultPageNumberPagination",
+    "PAGE_SIZE": 20,
+    "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.NamespaceVersioning",
+    "DEFAULT_VERSION": "v1",
+    "ALLOWED_VERSIONS": ("v1",),
+    "EXCEPTION_HANDLER": "api_hermes.exceptions.api_exception_handler",
 }
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-    "ROTATE_REFRESH_TOKENS": False,
+    "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
+
+AUTH_COOKIE_ACCESS = os.getenv("AUTH_COOKIE_ACCESS", "access_token")
+AUTH_COOKIE_REFRESH = os.getenv("AUTH_COOKIE_REFRESH", "refresh_token")
+AUTH_COOKIE_PATH = os.getenv("AUTH_COOKIE_PATH", "/")
+AUTH_COOKIE_REFRESH_PATH = os.getenv("AUTH_COOKIE_REFRESH_PATH", "/api/auth/")
+AUTH_COOKIE_DOMAIN = os.getenv("AUTH_COOKIE_DOMAIN") or None
+AUTH_COOKIE_SECURE = env_bool("AUTH_COOKIE_SECURE", not DEBUG)
+AUTH_COOKIE_SAMESITE = os.getenv("AUTH_COOKIE_SAMESITE", "Lax")
+AUTH_RETURN_TOKENS_IN_BODY = env_bool("AUTH_RETURN_TOKENS_IN_BODY", False)
+
+HEALTH_SERVICE_NAME = os.getenv("HEALTH_SERVICE_NAME", "backend-api")
 
 SWAGGER_SETTINGS = {
     "USE_SESSION_AUTH": False,

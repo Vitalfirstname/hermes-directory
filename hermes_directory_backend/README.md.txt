@@ -62,7 +62,7 @@ SQLite Database
 ### Frontend (React)
 - Vite + React  
 - Axios для запросов  
-- Хранение токена в localStorage  
+- Браузерная сессия через HttpOnly JWT cookies (без хранения access/refresh в localStorage)  
 - Публичные страницы и защищённые маршруты  
 - Отдельный проект `/frontend`  
 
@@ -70,9 +70,12 @@ SQLite Database
 - Приложение `api_hermes`  
 - Модель Office (номер, башня, организация, телефон, сайт)  
 - JWT авторизация (SimpleJWT)  
-- `/api/offices/` — CRUD  
-- `/api/auth/login/` — получение токена  
-- `/api/auth/me/` — текущий пользователь  
+- `/api/v1/offices/` — CRUD  
+- `/api/v1/auth/login/` — установка auth cookies  
+- `/api/v1/auth/refresh/` — обновление access cookie  
+- `/api/v1/auth/logout/` — инвалидация refresh + очистка cookies  
+- `/api/v1/auth/csrf/` — выдача CSRF cookie/token для браузера  
+- `/api/v1/auth/me/` — текущий пользователь  
 - Swagger документация `/swagger/`
 
 ### Database
@@ -102,21 +105,48 @@ http://127.0.0.1:8000/
 API эндпоинты
 Авторизация
 Метод	URL	Описание
-POST	/api/auth/login/	Выдаёт access+refresh JWT
-POST	/api/auth/refresh/	Обновляет access токен
-GET	/api/auth/me/	Данные текущего пользователя
+POST	/api/v1/auth/login/	Логин и установка HttpOnly access/refresh cookies
+POST	/api/v1/auth/refresh/	Обновляет access cookie (и refresh при ротации)
+POST	/api/v1/auth/logout/	Инвалидирует refresh token и очищает auth cookies
+GET	/api/v1/auth/csrf/	Возвращает CSRF token и выставляет csrftoken cookie
+GET	/api/v1/auth/me/	Данные текущего пользователя
 Офисы
 Метод	URL	Описание
-GET	/api/offices/	Список всех офисов
-POST	/api/offices/	Создать офис (admin/staff)
-GET	/api/offices/{id}/	Просмотр офиса
-PUT/PATCH	/api/offices/{id}/	Редактировать офис (admin/staff)
-DELETE	/api/offices/{id}/	Удалить офис (admin)
+GET	/api/v1/offices/	Список всех офисов
+POST	/api/v1/offices/	Создать офис (admin/staff)
+GET	/api/v1/offices/{id}/	Просмотр офиса
+PUT/PATCH	/api/v1/offices/{id}/	Редактировать офис (admin/staff)
+DELETE	/api/v1/offices/{id}/	Удалить офис (admin)
 Документация API
 
 Swagger UI: /swagger/
 
 Redoc: /redoc/
+
+Note:
+- Legacy unversioned `/api/*` routes are still available for backward compatibility.
+- Canonical endpoints for new clients are `/api/v1/*`.
+
+Pagination defaults:
+- All DRF list endpoints use `PageNumberPagination` by default.
+- Default page size: `20`.
+- Client can request `page_size`, capped at `100`.
+- Non-list utility endpoints (for example `/api/health/`) are intentionally not paginated.
+
+## Unified error response
+
+All API exceptions use a single envelope:
+
+```json
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Request validation failed.",
+    "details": {},
+    "trace_id": "optional-correlation-id"
+  }
+}
+```
 
 Стек технологий
 Backend
@@ -171,5 +201,47 @@ python manage.py check
    - `python manage.py check --deploy`
    - `python manage.py migrate`
    - `python manage.py collectstatic --noinput`
-5. Health endpoint for runtime probes:
-   - `GET /api/health/` (expects `{"status":"ok","database":"ok"}` on healthy instance)
+5. Health endpoints for runtime probes:
+   - `GET /api/health/live/` — liveness (process up)
+   - `GET /api/health/ready/` — readiness (critical deps)
+   - `GET /api/health/` — backward-compatible alias to readiness
+
+## Local production mode run (verified)
+
+Use this when you want to validate production settings locally (without staging).
+
+1. Ensure a PostgreSQL server is available locally.
+2. Create a database and user (example values below):
+   - `POSTGRES_DB=hermes_ci`
+   - `POSTGRES_USER=hermes_ci_user`
+   - `POSTGRES_PASSWORD=hermes_ci_password`
+   - `POSTGRES_HOST=127.0.0.1`
+   - `POSTGRES_PORT=5432` (or your custom port)
+3. Export production env vars and run checks:
+
+```bash
+set DJANGO_SETTINGS_MODULE=base_hermes.settings.prod
+set SECRET_KEY=local-prod-runtime-check-secret-12345678901234567890
+set ALLOWED_HOSTS=127.0.0.1,localhost,testserver
+set CORS_ALLOWED_ORIGINS=http://localhost:5173
+set CSRF_TRUSTED_ORIGINS=http://localhost:5173
+set SECURE_SSL_REDIRECT=False
+
+set USE_POSTGRES=True
+set POSTGRES_DB=hermes_ci
+set POSTGRES_USER=hermes_ci_user
+set POSTGRES_PASSWORD=hermes_ci_password
+set POSTGRES_HOST=127.0.0.1
+set POSTGRES_PORT=5432
+set POSTGRES_CONN_MAX_AGE=60
+
+python manage.py check --deploy
+python manage.py migrate --noinput
+python manage.py collectstatic --noinput
+python manage.py runserver 127.0.0.1:8010
+```
+
+4. Verify health endpoint:
+   - `GET http://127.0.0.1:8010/api/health/ready/`
+   - expected status: `200`
+   - expected shape includes: `status`, `service`, `timestamp`, `checks.database`, `checks.cache`

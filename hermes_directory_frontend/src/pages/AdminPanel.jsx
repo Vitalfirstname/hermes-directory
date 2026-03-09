@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import OfficesTable from "../components/OfficesTable";
-import api, { getAccessToken, getRefreshToken, logoutAndRedirect } from "../api/api";
+import api, { logoutAndRedirect } from "../api/api";
 
 export default function AdminPanel() {
   const navigate = useNavigate();
@@ -10,12 +10,6 @@ export default function AdminPanel() {
 
   useEffect(() => {
     async function checkAccess() {
-      const hasAnyToken = Boolean(getAccessToken() || getRefreshToken());
-      if (!hasAnyToken) {
-        navigate("/");
-        return;
-      }
-
       try {
         const meResponse = await api.get("auth/me/");
         const me = meResponse.data || {};
