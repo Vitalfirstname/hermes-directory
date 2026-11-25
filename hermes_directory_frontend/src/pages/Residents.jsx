@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import Header from "../components/Header/Header";
 import ResidentsTable from "../components/ResidentsTable/ResidentsTable";
-import api from "../api/api";
+import loadOffices from "../api/loadOffices";
 
 export default function Residents() {
   const [offices, setOffices] = useState([]);
@@ -10,19 +10,20 @@ export default function Residents() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    api
-      .get("offices/")
-      .then((res) => {
-        const data = Array.isArray(res.data) ? res.data : res.data.results || [];
-        setOffices(data);
+    const controller = new AbortController();
+    loadOffices(controller.signal)
+      .then((data) => {
+        if (!controller.signal.aborted) setOffices(data);
       })
       .catch((err) => {
+        if (controller.signal.aborted) return;
         console.error("Ошибка загрузки офисов", err);
         setError("Ошибка загрузки данных");
       })
       .finally(() => {
-        setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       });
+    return () => controller.abort();
   }, []);
 
   return (

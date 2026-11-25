@@ -1,4 +1,5 @@
 ﻿from django.contrib.auth import get_user_model
+from django.db import IntegrityError, transaction
 from django.urls import reverse
 from unittest.mock import patch
 from rest_framework import status
@@ -27,7 +28,7 @@ class OfficePermissionsTests(ErrorEnvelopeAssertionsMixin, APITestCase):
 
     def setUp(self):
         self.user_model = get_user_model()
-        self.office = Office.objects.create(number="101", owner="Initial Owner", tower="A")
+        self.office = Office.objects.create(number="11", owner="Initial Owner", tower="A")
 
         self.regular_user = self.user_model.objects.create_user(
             username="regular_user",
@@ -41,10 +42,10 @@ class OfficePermissionsTests(ErrorEnvelopeAssertionsMixin, APITestCase):
         )
 
         self.valid_payload = {
-            "number": "202",
+            "number": "22",
             "owner": "New Owner",
             "tower": "B",
-            "phone": "+10000000000",
+            "phone": "+375 (29) 123-45-67",
             "website": "https://example.com",
         }
 
@@ -247,7 +248,7 @@ class AuthRoutesTests(ErrorEnvelopeAssertionsMixin, APITestCase):
 
         csrf_client = APIClient(enforce_csrf_checks=True)
         csrf_client.cookies = login_response.cookies
-        payload = {"number": "701", "owner": "No CSRF", "tower": "A"}
+        payload = {"number": "71", "owner": "No CSRF", "tower": "A"}
         response = csrf_client.post("/api/offices/", payload, format="json")
         self.assert_error_envelope(response, status.HTTP_403_FORBIDDEN, "permission_denied")
 
@@ -268,7 +269,7 @@ class AuthRoutesTests(ErrorEnvelopeAssertionsMixin, APITestCase):
         csrf_client.cookies = login_response.cookies
         csrf_response = csrf_client.get(self.csrf_url)
         csrf_token = csrf_response.data["csrfToken"]
-        payload = {"number": "702", "owner": "With CSRF", "tower": "A"}
+        payload = {"number": "72", "owner": "With CSRF", "tower": "A"}
         response = csrf_client.post(
             "/api/offices/",
             payload,
@@ -292,7 +293,7 @@ class OfficeValidationTests(ErrorEnvelopeAssertionsMixin, APITestCase):
 
     def test_valid_payload_is_created(self):
         payload = {
-            "number": "501",
+            "number": "51",
             "owner": "Valid Owner LLC",
             "tower": "A",
             "phone": "+375 29 123-45-67",
@@ -301,23 +302,132 @@ class OfficeValidationTests(ErrorEnvelopeAssertionsMixin, APITestCase):
         response = self.client.post(self.url, payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_invalid_website_without_scheme_is_rejected(self):
+    def test_post_normalizes_values_before_saving(self):
+        response = self.client.post(
+            self.url,
+            {"tower": "b", "number": "01", "owner": "  ООО «Brand» — A, 2.  "},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        office = Office.objects.get(pk=response.data["id"])
+        self.assertEqual((office.tower, office.number, office.owner), ("B", "01", "ООО «Brand» — A, 2."))
+        self.assertEqual((office.phone, office.website), ("", ""))
+
+    def test_post_rejects_invalid_field_values(self):
+        cases = {
+            "tower": (None, "", "C", "А", " A"),
+            "number": (None, "", "123", "０１", "1a", "1 ", " 1", 1),
+            "owner": (None, "   ", "Name\n", "A\tB", "A\u2028B", "a" * 101),
+            "phone": (
+                "+123456789", "+375 (21) 123-45-67", "+375 (29) 123-45",
+                "+375291234567 +375441234567", "phone +375291234567",
+            ),
+            "website": ("ftp://example.com", "example.com example.org", "example.com/" + "x" * 181),
+        }
+        for field, invalid_values in cases.items():
+            for value in invalid_values:
+                with self.subTest(field=field, value=value):
+                    payload = {"tower": "A", "number": "1", "owner": "Owner", field: value}
+                    response = self.client.post(self.url, payload, format="json")
+                    self.assert_error_envelope(response, status.HTTP_400_BAD_REQUEST, "validation_error")
+                    self.assertIn(field, response.data["error"]["details"])
+        self.assertFalse(Office.objects.exists())
+
+    def test_put_requires_tower_and_normalizes_supplied_values(self):
+        office = Office.objects.create(tower="A", number="1", owner="Owner")
+        url = f"{self.url}{office.pk}/"
+        payload = {"number": "02", "owner": " Updated ", "phone": "+375171234567"}
+        response = self.client.put(url, payload, format="json")
+        self.assert_error_envelope(response, status.HTTP_400_BAD_REQUEST, "validation_error")
+        self.assertIn("tower", response.data["error"]["details"])
+        response = self.client.put(url, {**payload, "tower": "b", "website": "http://example.com"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        office.refresh_from_db()
+        self.assertEqual((office.tower, office.number, office.owner), ("B", "02", "Updated"))
+        self.assertEqual(office.phone, "+375 (17) 123-45-67")
+        self.assertEqual(office.website, "http://example.com")
+
+    def test_patch_rejects_invalid_number_and_can_clear_optional_fields(self):
+        office = Office.objects.create(
+            tower="A", number="1", owner="Owner",
+            phone="+375 (44) 123-45-67", website="https://example.com",
+        )
+        url = f"{self.url}{office.pk}/"
+        response = self.client.patch(url, {"number": "1 "}, format="json")
+        self.assert_error_envelope(response, status.HTTP_400_BAD_REQUEST, "validation_error")
+        self.assertIn("number", response.data["error"]["details"])
+        response = self.client.patch(url, {"phone": None, "website": ""}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        office.refresh_from_db()
+        self.assertEqual((office.tower, office.number, office.owner), ("A", "1", "Owner"))
+        self.assertEqual((office.phone, office.website), ("", ""))
+
+    def test_model_validation_uses_same_normalization(self):
+        office = Office(tower="a", number="05", owner=" Owner ", phone="+375331234567", website="example.com")
+        office.full_clean()
+        self.assertEqual((office.tower, office.number, office.owner), ("A", "05", "Owner"))
+        self.assertEqual((office.phone, office.website), ("+375 (33) 123-45-67", "https://example.com"))
+
+    def test_database_rejects_invalid_tower_but_allows_duplicate_offices(self):
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            Office.objects.create(tower="C", number="1", owner="Owner")
+        Office.objects.create(tower="A", number="1", owner="First")
+        Office.objects.create(tower="A", number="1", owner="Second")
+        self.assertEqual(Office.objects.filter(tower="A", number="1").count(), 2)
+
+    def test_owner_length_is_checked_after_trimming(self):
+        owner = "a" * 99 + "Z"
+        payload = {"tower": "A", "number": "1", "owner": f" {owner} "}
+        response = self.client.post(self.url, payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Office.objects.get(pk=response.data["id"]).owner, owner)
+
+        response = self.client.post(self.url, {**payload, "owner": f" {owner}X "}, format="json")
+        self.assert_error_envelope(response, status.HTTP_400_BAD_REQUEST, "validation_error")
+        self.assertIn("owner", response.data["error"]["details"])
+
+    def test_website_rejects_invalid_raw_hosts_and_ports(self):
+        for website in (
+            "127.1", "https://0x7f.1", "https://0177.0.0.1", "https://%31%32%37.0.0.1",
+            "https:///example.org", "https://example.org\\path", "example.org:",
+            "example.org:0", "example.org:65536", "https://[::1]:65536",
+        ):
+            with self.subTest(website=website):
+                payload = {"tower": "A", "number": "1", "owner": "Owner", "website": website}
+                response = self.client.post(self.url, payload, format="json")
+                self.assert_error_envelope(response, status.HTTP_400_BAD_REQUEST, "validation_error")
+                self.assertIn("website", response.data["error"]["details"])
+        self.assertFalse(Office.objects.exists())
+
+    def test_website_accepts_ipv4_ipv6_and_port_boundaries(self):
+        for website, expected in (
+            ("127.0.0.1:1", "https://127.0.0.1:1"),
+            ("https://[::1]:65535", "https://[::1]:65535"),
+            ("example.org:65535", "https://example.org:65535"),
+        ):
+            with self.subTest(website=website):
+                payload = {"tower": "A", "number": "1", "owner": "Owner", "website": website}
+                response = self.client.post(self.url, payload, format="json")
+                self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+                self.assertEqual(response.data["website"], expected)
+
+    def test_website_without_scheme_gets_https(self):
         payload = {
-            "number": "502",
+            "number": "52",
             "owner": "Invalid Website Inc",
             "tower": "B",
             "phone": "+375291234567",
             "website": "example.com",
         }
         response = self.client.post(self.url, payload, format="json")
-        self.assert_error_envelope(response, status.HTTP_400_BAD_REQUEST, "validation_error")
-        self.assertIn("website", response.data["error"]["details"])
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["website"], "https://example.com")
 
     def test_invalid_website_unsafe_scheme_is_rejected(self):
         payload = {
-            "number": "503",
+            "number": "53",
             "owner": "Unsafe Scheme Ltd",
-            "tower": "C",
+            "tower": "B",
             "phone": "+375291234567",
             "website": "javascript:alert(1)",
         }
@@ -327,9 +437,9 @@ class OfficeValidationTests(ErrorEnvelopeAssertionsMixin, APITestCase):
 
     def test_invalid_phone_is_rejected(self):
         payload = {
-            "number": "504",
+            "number": "54",
             "owner": "Invalid Phone Co",
-            "tower": "D",
+            "tower": "A",
             "phone": "call-me-maybe",
             "website": "https://example.org",
         }
@@ -339,7 +449,7 @@ class OfficeValidationTests(ErrorEnvelopeAssertionsMixin, APITestCase):
 
     def test_missing_required_owner_is_rejected(self):
         payload = {
-            "number": "505",
+            "number": "55",
             "tower": "A",
             "phone": "+375291234567",
             "website": "https://example.com",
@@ -423,7 +533,7 @@ class VersionedRoutingTests(APITestCase):
             password="versioned-pass-1",
             is_staff=False,
         )
-        Office.objects.create(number="801", owner="Versioned Owner", tower="A")
+        Office.objects.create(number="81", owner="Versioned Owner", tower="A")
 
     def test_versioned_offices_endpoint_is_accessible(self):
         response = self.client.get("/api/v1/offices/")
@@ -464,7 +574,7 @@ class PaginationStrategyTests(ErrorEnvelopeAssertionsMixin, APITestCase):
     def setUp(self):
         for i in range(1, 131):
             Office.objects.create(
-                number=f"{i:03d}",
+                number=f"{i % 100:02d}",
                 owner=f"Owner {i:03d}",
                 tower="A" if i % 2 else "B",
             )
